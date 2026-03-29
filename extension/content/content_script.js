@@ -84,16 +84,64 @@
     return null;
   }
 
-  function isBookPage() {
-    if (!/amazon\.co\.jp\/([\w%-]+\/)?dp\//.test(location.href)) return false;
-    const hasDetail =
-      document.querySelector('#detail-bullets') ||
-      document.querySelector('#productDetailsTable') ||
-      document.querySelector('#detailBullets_feature_div') ||
-      document.querySelector('#rpi-attribute-book_details-isbn13') ||
-      document.querySelector('#rpi-attribute-book_details-isbn10');
+  function isAmazonBookPage() {
+    if (!/\/dp\/[A-Z0-9]{10}/i.test(location.href)) return false;
+    const hasDetail = document.querySelector(
+      '#detail-bullets, #productDetailsTable, #detailBullets_feature_div, ' +
+      '#rpi-attribute-book_details-isbn13, #rpi-attribute-book_details-isbn10'
+    );
     if (!hasDetail) return false;
     return document.body.innerText.includes('ISBN-10') || document.body.innerText.includes('ISBN-13');
+  }
+
+  function isRakutenBookPage() {
+    // URLパターンのみで判定（DOM構造への依存を排除）
+    return /^https:\/\/books\.rakuten\.co\.jp\/rb\/\d+/.test(location.href);
+  }
+
+  function extractIsbnFromRakuten() {
+    // 1. メタタグ（楽天ブックスは <meta property="books:isbn"> を静的に出力する）
+    for (const selector of ['meta[property="books:isbn"]', 'meta[name="isbn"]']) {
+      const meta = document.querySelector(selector);
+      if (meta) {
+        const isbn = toIsbn13(meta.getAttribute('content'));
+        if (isbn) return isbn;
+      }
+    }
+
+    // 2. ページ内の全 th/dt ペアから「ISBN」ラベルに対応する値を抽出
+    const ths = document.querySelectorAll('th, dt');
+    for (const th of ths) {
+      if (th.textContent.includes('ISBN')) {
+        const td = th.nextElementSibling;
+        if (td) {
+          const isbn = toIsbn13(td.textContent.trim());
+          if (isbn) return isbn;
+        }
+      }
+    }
+
+    // 3. ページ本文のテキストから ISBN-13 / ISBN-10 パターンを検索
+    const bodyText = document.body.innerText;
+    const m13 = bodyText.match(/ISBN[：:\s]*(97[89][-\d]{10,17})/);
+    if (m13) {
+      const isbn = toIsbn13(m13[1]);
+      if (isbn) return isbn;
+    }
+    const m10 = bodyText.match(/ISBN[：:\s]*([0-9]{9}[0-9X])/);
+    if (m10) {
+      const isbn = toIsbn13(m10[1]);
+      if (isbn) return isbn;
+    }
+
+    // 4. URL末尾の数値ID (/rb/1234567890/)
+    const pathMatch = location.pathname.match(/\/rb\/(\d{9,13})\/?/);
+    if (pathMatch) {
+      const isbn = toIsbn13(pathMatch[1]);
+      if (isbn) return isbn;
+    }
+
+    return null;
   }
 
   // --- DOM サニタイズ ---
@@ -137,15 +185,24 @@
     return wrapper;
   }
 
-  function insertWidget(widget) {
-    const buybox = document.querySelector('#buybox');
-    if (buybox) {
-      buybox.insertAdjacentElement('afterend', widget);
+  function insertWidget(widget, site) {
+    if (site === 'rakuten') {
+      // 実際のページ構造: #extra > #purchaseBox (在庫情報＋カートボタン)
+      const purchaseBox = document.querySelector('#purchaseBox');
+      if (purchaseBox) { purchaseBox.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: #extra コンテナ末尾
+      const extra = document.querySelector('#extra');
+      if (extra) { extra.appendChild(widget); return; }
+      // 最終フォールバック: body末尾（先頭への挿入を避ける）
+      document.body.appendChild(widget);
       return;
-    }
-    const centerCol = document.querySelector('#centerCol');
-    if (centerCol) {
-      centerCol.appendChild(widget);
+    } else {
+      // Amazon: buybox直下に挿入（複数セレクタで現行・旧レイアウト両対応）
+      const buybox = document.querySelector('#buybox, #desktop_buybox');
+      if (buybox) { buybox.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: 中央カラム・右カラム・ページ全体コンテナの順で試みる
+      const col = document.querySelector('#centerCol, #rightCol, #ppd, #dp');
+      if (col) { col.appendChild(widget); return; }
     }
   }
 
@@ -265,16 +322,24 @@
 
   // --- メイン処理 ---
   async function main() {
-    // 書籍ページでなければ終了
-    if (!isBookPage()) return;
+    // サイト判定とISBN抽出
+    let site = null;
+    let isbn = null;
 
-    // ISBNが取得できなければ終了
-    const isbn = extractIsbnFromPage();
-    if (!isbn) return;
+    if (isAmazonBookPage()) {
+      site = 'amazon';
+      isbn = extractIsbnFromPage();
+    } else if (isRakutenBookPage()) {
+      site = 'rakuten';
+      isbn = extractIsbnFromRakuten();
+    }
+
+    // 書籍ページ・ISBN未取得なら終了
+    if (!site || !isbn) return;
 
     // ウィジェット挿入
     const widget = createWidget();
-    insertWidget(widget);
+    insertWidget(widget, site);
     if (!widget.parentElement) return; // 挿入失敗
 
     // 設定取得
@@ -335,9 +400,16 @@
   // ポップアップからの問い合わせに応答
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'GET_PAGE_INFO') {
-      const bookPage = isBookPage();
-      const isbn = bookPage ? extractIsbnFromPage() : null;
-      sendResponse({ isBookPage: bookPage, isbn });
+      let isbn = null;
+      let isBookPage = false;
+      if (isAmazonBookPage()) {
+        isBookPage = true;
+        isbn = extractIsbnFromPage();
+      } else if (isRakutenBookPage()) {
+        isBookPage = true;
+        isbn = extractIsbnFromRakuten();
+      }
+      sendResponse({ isBookPage, isbn });
       return false;
     }
   });

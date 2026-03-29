@@ -93,7 +93,11 @@
 
     // アクティブタブを取得
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab || !tab.url || !tab.url.includes('amazon.co.jp')) {
+    const isSupportedSite = tab && tab.url && (
+      tab.url.includes('amazon.co.jp') ||
+      tab.url.includes('books.rakuten.co.jp')
+    );
+    if (!isSupportedSite) {
       show('not-book-page');
       return;
     }

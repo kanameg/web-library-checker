@@ -2,13 +2,14 @@
   "manifest_version": 3,
   "name": "図書館蔵書チェッカー",
   "version": "1.0.0",
-  "description": "Amazonの書籍ページで図書館の蔵書状況を確認できます",
+  "description": "Amazon・楽天ブックスの書籍ページで図書館の蔵書状況を確認できます",
   "permissions": [
     "storage",
     "activeTab"
   ],
   "host_permissions": [
     "https://www.amazon.co.jp/*",
+    "https://books.rakuten.co.jp/*",
     "https://api.calil.jp/*"
   ],
   "background": {
@@ -16,7 +17,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.amazon.co.jp/*"],
+      "matches": [
+        "https://www.amazon.co.jp/*",
+        "https://books.rakuten.co.jp/*"
+      ],
       "js": ["content/content_script.js"],
       "css": ["content/content_script.css"],
       "run_at": "document_idle"
