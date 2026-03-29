@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>図書館蔵書チェッカー</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <header class="popup-header">
+      <span class="header-icon">📚</span>
+      <h1>図書館蔵書チェッカー</h1>
+    </header>
+
+    <main class="popup-body">
+      <!-- 現在のページがAmazon書籍ページでない場合 -->
+      <div id="not-book-page" class="section hidden">
+        <p class="info-text">Amazon の書籍ページで開いてください。</p>
+      </div>
+
+      <!-- 設定未完了 -->
+      <div id="setup-required" class="section hidden">
+        <p class="info-text">図書館が設定されていません。</p>
+        <button id="open-options-btn" class="btn btn-primary">設定を開く</button>
+      </div>
+
+      <!-- ローディング -->
+      <div id="loading" class="section hidden">
+        <div class="loading-row">
+          <div class="spinner"></div>
+          <span>確認中...</span>
+        </div>
+      </div>
+
+      <!-- 結果 -->
+      <div id="results" class="section hidden">
+        <div id="isbn-display" class="isbn-info"></div>
+        <div id="library-list"></div>
+      </div>
+
+      <!-- エラー -->
+      <div id="error-section" class="section hidden">
+        <p class="error-text" id="error-message">エラーが発生しました</p>
+      </div>
+    </main>
+
+    <footer class="popup-footer">
+      <button id="settings-btn" class="btn btn-secondary">⚙️ 設定</button>
+      <a href="https://calil.jp/" target="_blank" rel="noopener noreferrer" class="calil-link">Powered by カーリル</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
