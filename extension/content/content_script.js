@@ -199,12 +199,15 @@
       document.body.appendChild(widget);
       return;
     } else {
-      // Amazon: 商品説明の直後（中央ペイン中央付近）
-      const bookDesc = document.querySelector('#bookDescription_feature_div');
-      if (bookDesc) { bookDesc.insertAdjacentElement('afterend', widget); return; }
-      // フォールバック: 商品詳細情報の直後
+      // Amazon: 詳細情報（ISBN・出版社・ページ数）の直後
+      const richInfo = document.querySelector('#richProductInformation_feature_div');
+      if (richInfo) { richInfo.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: 旧形式の詳細情報の直後
       const detailBullets = document.querySelector('#detailBullets_feature_div');
       if (detailBullets) { detailBullets.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: 内容紹介の直後
+      const bookDesc = document.querySelector('#bookDescription_feature_div');
+      if (bookDesc) { bookDesc.insertAdjacentElement('afterend', widget); return; }
       // フォールバック: 中央カラム末尾 → ページコンテナ
       const col = document.querySelector('#centerCol, #ppd, #dp');
       if (col) { col.appendChild(widget); return; }
