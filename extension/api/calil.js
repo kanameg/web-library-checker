@@ -47,6 +47,7 @@ async function fetchWithRetry(url, retryCount = 0) {
     }
     return response;
   } catch (err) {
+    console.error('[Calil] ERROR  ', err.message, url);
     if (retryCount < MAX_RETRY_COUNT) {
       const waitMs = Math.pow(2, retryCount) * 1000;
       await sleep(waitMs);
@@ -72,20 +73,24 @@ async function checkLibrary(appkey, isbn, systemid) {
   });
 
   const url = `${CALIL_API_BASE}/check?${params}`;
+  console.log('[Calil] REQUEST ', url);
   let response = await fetchWithRetry(url);
   let data = await parseResponse(response);
+  console.log('[Calil] RESPONSE', '/check', JSON.stringify(data));
 
   let pollCount = 0;
   while (data.continue === 1 && pollCount < MAX_POLL_COUNT) {
     await sleep(POLL_INTERVAL_MS);
+    pollCount++;
     const pollParams = new URLSearchParams({
       appkey,
       session: data.session,
       format: 'json',
     });
+    console.log('[Calil] POLLING ', `session=${data.session} attempt=${pollCount}`);
     response = await fetchWithRetry(`${CALIL_API_BASE}/check?${pollParams}`);
     data = await parseResponse(response);
-    pollCount++;
+    console.log('[Calil] POLLING RESPONSE', JSON.stringify(data));
   }
 
   if (data.continue === 1) {
@@ -129,7 +134,10 @@ async function searchLibraries(appkey, pref, city = '') {
   const params = new URLSearchParams({ appkey, pref, format: 'json' });
   if (city) params.set('city', city);
 
-  const response = await fetchWithRetry(`${CALIL_API_BASE}/library?${params}`);
+  const url = `${CALIL_API_BASE}/library?${params}`;
+  console.log('[Calil] REQUEST ', url);
+  const response = await fetchWithRetry(url);
   const data = await parseResponse(response);
+  console.log('[Calil] RESPONSE', '/library', JSON.stringify(data));
   return Array.isArray(data) ? data : [];
 }
