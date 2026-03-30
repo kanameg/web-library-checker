@@ -245,16 +245,11 @@
     `;
   }
 
-  function getStatusInfo(libkey) {
-    if (!libkey || Object.keys(libkey).length === 0) {
-      return { iconClass: 'none', label: '蔵書なし' };
-    }
-
-    const statuses = Object.values(libkey);
-    if (statuses.includes('貸出可')) return { iconClass: 'available', label: '貸出可' };
-    if (statuses.includes('貸出中')) return { iconClass: 'on-loan', label: '貸出中' };
-    if (statuses.includes('蔵書なし')) return { iconClass: 'none', label: '蔵書なし' };
-    return { iconClass: 'other', label: statuses[0] || '確認中' };
+  function getBranchIconClass(status) {
+    if (status === '貸出可') return 'available';
+    if (status === '貸出中') return 'on-loan';
+    if (status === '休館中') return 'none';
+    return 'other';
   }
 
   function setWidgetResults(widget, results) {
@@ -264,46 +259,58 @@
       return;
     }
 
-    const rows = results.map(({ library, result, error }) => {
+    const blocks = results.map(({ library, result, error }) => {
+      const systemName = sanitizeText(library.name);
+
       if (error) {
         return `
-          <div class="calil-library-row">
-            <span class="calil-status-icon error"></span>
-            <span class="calil-lib-name">${sanitizeText(library.name)}</span>
-            <span class="calil-lib-status calil-error">確認に失敗しました</span>
+          <div class="calil-system-block">
+            <div class="calil-system-header"><span class="calil-system-name">${systemName}</span></div>
+            <div class="calil-branch-row">
+              <span class="calil-status-icon error"></span>
+              <span class="calil-branch-status calil-error">確認に失敗しました</span>
+            </div>
           </div>
         `;
       }
 
-      if (!result || result.status === 'Error') {
-        return `
-          <div class="calil-library-row">
-            <span class="calil-status-icon none"></span>
-            <span class="calil-lib-name">${sanitizeText(library.name)}</span>
-            <span class="calil-lib-status calil-no-stock">この図書館には蔵書がありません</span>
-          </div>
-        `;
-      }
-
-      const libkey = result.libkey || {};
-      const { iconClass, label } = getStatusInfo(libkey);
-      const reserveUrl = result.reserveurl ? sanitizeUrl(result.reserveurl) : null;
-
+      const reserveUrl = result?.reserveurl ? sanitizeUrl(result.reserveurl) : null;
       const reserveLink = reserveUrl && reserveUrl !== '#'
         ? `<a href="${reserveUrl}" target="_blank" rel="noopener noreferrer" class="calil-reserve-link">予約する</a>`
         : '';
 
+      if (!result || result.status === 'Error' || !result.libkey || Object.keys(result.libkey).length === 0) {
+        return `
+          <div class="calil-system-block">
+            <div class="calil-system-header"><span class="calil-system-name">${systemName}</span>${reserveLink}</div>
+            <div class="calil-branch-row">
+              <span class="calil-status-icon none"></span>
+              <span class="calil-branch-status calil-no-stock">この図書館には蔵書がありません</span>
+            </div>
+          </div>
+        `;
+      }
+
+      const branchRows = Object.entries(result.libkey).map(([branchName, status]) => {
+        const iconClass = getBranchIconClass(status);
+        return `
+          <div class="calil-branch-row">
+            <span class="calil-status-icon ${iconClass}"></span>
+            <span class="calil-branch-name">${sanitizeText(branchName)}</span>
+            <span class="calil-branch-status">${sanitizeText(status)}</span>
+          </div>
+        `;
+      }).join('');
+
       return `
-        <div class="calil-library-row">
-          <span class="calil-status-icon ${iconClass}"></span>
-          <span class="calil-lib-name">${sanitizeText(library.name)}</span>
-          <span class="calil-lib-status">${sanitizeText(label)}</span>
-          ${reserveLink}
+        <div class="calil-system-block">
+          <div class="calil-system-header"><span class="calil-system-name">${systemName}</span>${reserveLink}</div>
+          ${branchRows}
         </div>
       `;
     });
 
-    body.innerHTML = rows.join('');
+    body.innerHTML = blocks.join('');
   }
 
   // --- セッションキャッシュ ---
