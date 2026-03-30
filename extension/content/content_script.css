@@ -125,10 +125,14 @@
 }
 
 .calil-branch-status {
-  color: #555;
   font-size: 12px;
   flex-shrink: 0;
 }
+
+.calil-branch-status.available { color: #2e7d32; }
+.calil-branch-status.on-loan   { color: #f57f17; }
+.calil-branch-status.other     { color: #1565c0; }
+.calil-branch-status.none      { color: #9e9e9e; }
 
 .calil-reserve-link {
   margin-left: auto;

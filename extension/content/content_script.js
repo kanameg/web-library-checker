@@ -297,7 +297,7 @@
           <div class="calil-branch-row">
             <span class="calil-status-icon ${iconClass}"></span>
             <span class="calil-branch-name">${sanitizeText(branchName)}</span>
-            <span class="calil-branch-status">${sanitizeText(status)}</span>
+            <span class="calil-branch-status ${iconClass}">${sanitizeText(status)}</span>
           </div>
         `;
       }).join('');
