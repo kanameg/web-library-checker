@@ -24,8 +24,9 @@ body {
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background: #232f3e;
-  color: #fff;
+  background: #ffffff;
+  color: #333333;
+  border-bottom: 1px solid #eeeeee;
 }
 
 .popup-header h1 {
