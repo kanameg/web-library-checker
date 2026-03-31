@@ -187,12 +187,14 @@
 
   function insertWidget(widget, site) {
     if (site === 'rakuten') {
-      // 商品情報セクション（発売日・出版社・ISBN）の直後
+      // クーポンエリアの直前（価格・ポイントの直後）
+      const couponArea = document.querySelector('#itemCouponArea');
+      if (couponArea) { couponArea.insertAdjacentElement('beforebegin', widget); return; }
+      // フォールバック: 商品情報セクション（発売日・出版社・ISBN）の直前
       const productDesc = document.querySelector('#productDetailedDescription');
+      if (productDesc) { productDesc.insertAdjacentElement('beforebegin', widget); return; }
+      // フォールバック: 商品情報セクションの直後
       if (productDesc) { productDesc.insertAdjacentElement('afterend', widget); return; }
-      // フォールバック: タイトル・価格エリアの直後
-      const productInfo = document.querySelector('#productInfo');
-      if (productInfo) { productInfo.insertAdjacentElement('afterend', widget); return; }
       // フォールバック: 中央ペイン末尾
       const main = document.querySelector('#main');
       if (main) { main.appendChild(widget); return; }
