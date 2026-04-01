@@ -1,7 +1,7 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  setupFiles: ['./extension/__tests__/setup.js'],
-  testMatch: ['**/extension/__tests__/**/*.test.js'],
+  setupFiles: ['./tests/setup.js'],
+  testMatch: ['**/tests/**/*.test.js'],
   collectCoverageFrom: [
     'extension/api/calil.js',
     'extension/background/service_worker.js',
