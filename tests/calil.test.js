@@ -10,7 +10,7 @@ const path = require('path');
 function buildCalilContext(fetchMock) {
   const sleepDurations = [];
   const logs = { log: [], error: [] };
-  const code = fs.readFileSync(path.resolve(__dirname, '../api/calil.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../extension/api/calil.js'), 'utf8');
   const ctx = vm.createContext({
     fetch: fetchMock || jest.fn(),
     console: {

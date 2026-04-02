@@ -27,7 +27,7 @@ function buildServiceWorkerContext() {
   const searchLibraries = jest.fn();
 
   const code = fs.readFileSync(
-    path.resolve(__dirname, '../background/service_worker.js'),
+    path.resolve(__dirname, '../extension/background/service_worker.js'),
     'utf8'
   );
 

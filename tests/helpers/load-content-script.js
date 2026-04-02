@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 function loadContentScript() {
-  const filePath = path.resolve(__dirname, '../../content/content_script.js');
+  const filePath = path.resolve(__dirname, '../../extension/content/content_script.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
   // Replace the IIFE tail that calls main() with a return of all internals

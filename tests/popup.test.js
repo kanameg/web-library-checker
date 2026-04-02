@@ -7,7 +7,7 @@ const path = require('path');
 
 // Load popup.js and expose internal functions by replacing the IIFE tail
 function loadPopupScript() {
-  const filePath = path.resolve(__dirname, '../popup/popup.js');
+  const filePath = path.resolve(__dirname, '../extension/popup/popup.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
   // Replace the IIFE end that registers the DOMContentLoaded listener
