@@ -18,6 +18,9 @@ function loadContentScript() {
   const sanitizeCode = fs.readFileSync(
     path.resolve(__dirname, '../../extension/utils/sanitize.js'), 'utf8'
   );
+  const statusCode = fs.readFileSync(
+    path.resolve(__dirname, '../../extension/utils/status.js'), 'utf8'
+  );
   const filePath = path.resolve(__dirname, '../../extension/content/content_script.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
@@ -25,7 +28,6 @@ function loadContentScript() {
   code = code.replace(
     '  main();\n})();',
     `  return {
-    getBranchIconClass,
     setWidgetResults,
     getCacheKey,
     loadFromCache,
@@ -39,6 +41,7 @@ function loadContentScript() {
   const combined = `(function() {
 ${isbnCode}
 ${sanitizeCode}
+${statusCode}
 const contentExports = ${code}
 return Object.assign({
   calcIsbn13CheckDigit,
@@ -50,6 +53,7 @@ return Object.assign({
   extractIsbnFromRakuten,
   sanitizeText,
   sanitizeUrl,
+  getStatusClass,
 }, contentExports);
 })()`;
 

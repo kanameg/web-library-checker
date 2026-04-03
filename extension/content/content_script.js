@@ -5,6 +5,7 @@
  * 依存スクリプト (manifest.json の js 配列でこのファイルより前に読み込むこと):
  *   - utils/isbn.js    : toIsbn13, extractIsbnFromPage, extractIsbnFromRakuten
  *   - utils/sanitize.js: sanitizeText, sanitizeUrl
+ *   - utils/status.js  : getStatusClass
  */
 
 (function () {
@@ -109,13 +110,6 @@
     `;
   }
 
-  function getBranchIconClass(status) {
-    if (status === '貸出可') return 'available';
-    if (status === '貸出中') return 'on-loan';
-    if (status === '休館中') return 'none';
-    return 'other';
-  }
-
   function setWidgetResults(widget, results) {
     const body = widget.querySelector('.calil-body');
     if (!results || results.length === 0) {
@@ -156,7 +150,7 @@
       }
 
       const branchRows = Object.entries(result.libkey).map(([branchName, status]) => {
-        const iconClass = getBranchIconClass(status);
+        const iconClass = getStatusClass(status);
         return `
           <div class="calil-branch-row">
             <span class="calil-status-icon ${iconClass}"></span>

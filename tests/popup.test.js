@@ -10,6 +10,9 @@ function loadPopupScript() {
   const sanitizeCode = fs.readFileSync(
     path.resolve(__dirname, '../extension/utils/sanitize.js'), 'utf8'
   );
+  const statusCode = fs.readFileSync(
+    path.resolve(__dirname, '../extension/utils/status.js'), 'utf8'
+  );
   const filePath = path.resolve(__dirname, '../extension/popup/popup.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
@@ -31,6 +34,7 @@ function loadPopupScript() {
   // sanitize.js のグローバル関数を外側スコープで定義してから popup.js の IIFE を実行する
   const combined = `(function() {
 ${sanitizeCode}
+${statusCode}
 return ${iife}
 })()`;
 
