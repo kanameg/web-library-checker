@@ -192,25 +192,3 @@ function extractIsbnFromRakuten() {
   return null;
 }
 
-/**
- * 書籍ページかどうか判定
- * @returns {boolean}
- */
-function isBookPage() {
-  // URLチェック
-  if (!/amazon\.co\.jp\/([\w-]+\/)?dp\//.test(location.href)) return false;
-
-  // DOM存在チェック
-  const hasDetailSection =
-    document.querySelector('#detail-bullets') !== null ||
-    document.querySelector('#productDetailsTable') !== null ||
-    document.querySelector('#detailBullets_feature_div') !== null ||
-    document.querySelector('#rpi-attribute-book_details-isbn13') !== null ||
-    document.querySelector('#rpi-attribute-book_details-isbn10') !== null;
-
-  if (!hasDetailSection) return false;
-
-  // ISBN-10 or ISBN-13 テキスト存在チェック
-  const bodyText = document.body.innerText;
-  return bodyText.includes('ISBN-10') || bodyText.includes('ISBN-13');
-}
