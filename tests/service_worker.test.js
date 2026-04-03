@@ -26,6 +26,10 @@ function buildServiceWorkerContext() {
   const checkLibraries = jest.fn();
   const searchLibraries = jest.fn();
 
+  const storageCode = fs.readFileSync(
+    path.resolve(__dirname, '../extension/utils/storage.js'),
+    'utf8'
+  );
   const code = fs.readFileSync(
     path.resolve(__dirname, '../extension/background/service_worker.js'),
     'utf8'
@@ -41,6 +45,8 @@ function buildServiceWorkerContext() {
     console,
   });
 
+  // storage.js を先にロードして getSettings をコンテキストに定義する
+  vm.runInContext(storageCode, ctx);
   vm.runInContext(code, ctx);
 
   // Helper to invoke the registered message handler and collect the response

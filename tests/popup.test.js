@@ -7,6 +7,9 @@ const path = require('path');
 
 // Load popup.js and expose internal functions by replacing the IIFE tail
 function loadPopupScript() {
+  const sanitizeCode = fs.readFileSync(
+    path.resolve(__dirname, '../extension/utils/sanitize.js'), 'utf8'
+  );
   const filePath = path.resolve(__dirname, '../extension/popup/popup.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
@@ -22,8 +25,17 @@ function loadPopupScript() {
 })();`
   );
 
+  // ファイル先頭コメントを除いた IIFE 部分だけ取り出す（ASI 回避のため）
+  const iife = code.slice(code.indexOf('(function'));
+
+  // sanitize.js のグローバル関数を外側スコープで定義してから popup.js の IIFE を実行する
+  const combined = `(function() {
+${sanitizeCode}
+return ${iife}
+})()`;
+
   // eslint-disable-next-line no-eval
-  return eval(code);
+  return eval(combined);
 }
 
 let fns;

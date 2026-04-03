@@ -12,6 +12,12 @@ const fs = require('fs');
 const path = require('path');
 
 function loadContentScript() {
+  const isbnCode = fs.readFileSync(
+    path.resolve(__dirname, '../../extension/utils/isbn.js'), 'utf8'
+  );
+  const sanitizeCode = fs.readFileSync(
+    path.resolve(__dirname, '../../extension/utils/sanitize.js'), 'utf8'
+  );
   const filePath = path.resolve(__dirname, '../../extension/content/content_script.js');
   let code = fs.readFileSync(filePath, 'utf8');
 
@@ -19,13 +25,6 @@ function loadContentScript() {
   code = code.replace(
     '  main();\n})();',
     `  return {
-    calcIsbn13CheckDigit,
-    normalizeIsbn,
-    isbn10to13,
-    toIsbn13,
-    extractAsinFromUrl,
-    sanitizeText,
-    sanitizeUrl,
     getBranchIconClass,
     setWidgetResults,
     getCacheKey,
@@ -35,8 +34,27 @@ function loadContentScript() {
 })();`
   );
 
+  // isbn.js と sanitize.js のグローバル関数を外側スコープで定義してから
+  // content_script.js の IIFE を実行することで依存関係を解決する
+  const combined = `(function() {
+${isbnCode}
+${sanitizeCode}
+const contentExports = ${code}
+return Object.assign({
+  calcIsbn13CheckDigit,
+  normalizeIsbn,
+  isbn10to13,
+  toIsbn13,
+  extractAsinFromUrl,
+  extractIsbnFromPage,
+  extractIsbnFromRakuten,
+  sanitizeText,
+  sanitizeUrl,
+}, contentExports);
+})()`;
+
   // eslint-disable-next-line no-eval
-  return eval(code);
+  return eval(combined);
 }
 
 module.exports = { loadContentScript };
