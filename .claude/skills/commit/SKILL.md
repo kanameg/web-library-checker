@@ -1,6 +1,6 @@
 ---
+name: commit
 description: git コミットを作成する。日本語のコミットメッセージでステージング・コミットまで行う。
-allowed-tools: Bash
 ---
 
 # /commit
