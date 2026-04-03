@@ -1,6 +1,10 @@
 /**
  * コンテンツスクリプト
  * Amazonの書籍ページに蔵書確認ウィジェットを挿入する
+ *
+ * 依存スクリプト (manifest.json の js 配列でこのファイルより前に読み込むこと):
+ *   - utils/isbn.js    : toIsbn13, extractIsbnFromPage, extractIsbnFromRakuten
+ *   - utils/sanitize.js: sanitizeText, sanitizeUrl
  */
 
 (function () {
