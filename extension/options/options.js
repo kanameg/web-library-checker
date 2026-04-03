@@ -33,12 +33,6 @@
     setTimeout(() => el.classList.add('hidden'), 3000);
   }
 
-  function sanitizeText(text) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(text)));
-    return div.innerHTML;
-  }
-
   // --- 設定読み込み ---
   async function loadSettings() {
     return new Promise((resolve, reject) => {

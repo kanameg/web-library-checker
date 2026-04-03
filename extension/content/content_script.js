@@ -66,23 +66,6 @@
     return null;
   }
 
-  // --- DOM サニタイズ ---
-  function sanitizeText(text) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(text));
-    return div.innerHTML;
-  }
-
-  function sanitizeUrl(url) {
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '#';
-      return parsed.href;
-    } catch {
-      return '#';
-    }
-  }
-
   // --- ウィジェット構築 ---
   function createWidget() {
     const wrapper = document.createElement('div');

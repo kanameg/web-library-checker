@@ -12,22 +12,6 @@
     document.getElementById(id).classList.add('hidden');
   }
 
-  function sanitizeText(text) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(text)));
-    return div.innerHTML;
-  }
-
-  function sanitizeUrl(url) {
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '#';
-      return parsed.href;
-    } catch {
-      return '#';
-    }
-  }
-
   function getStatusInfo(libkey) {
     if (!libkey || Object.keys(libkey).length === 0) {
       return { dotClass: 'none', label: '蔵書なし' };

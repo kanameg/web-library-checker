@@ -21,7 +21,7 @@
         "https://www.amazon.co.jp/*",
         "https://books.rakuten.co.jp/*"
       ],
-      "js": ["utils/isbn.js", "content/content_script.js"],
+      "js": ["utils/isbn.js", "utils/sanitize.js", "content/content_script.js"],
       "css": ["content/content_script.css"],
       "run_at": "document_idle"
     }
