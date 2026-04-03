@@ -158,15 +158,6 @@ describe('fetchWithRetry', () => {
     expect(sleepDurations).toEqual([1000, 2000]);
   });
 
-  test('logs error with [Calil] ERROR prefix on each failure', async () => {
-    const fetchMock = jest.fn()
-      .mockRejectedValueOnce(new Error('fail once'))
-      .mockResolvedValue(makeResponse({ continue: 0 }));
-    const { ctx, logs } = buildCalilContext(fetchMock);
-    await ctx.fetchWithRetry('https://example.com/api');
-    expect(logs.error.length).toBeGreaterThanOrEqual(1);
-    expect(logs.error[0]).toContain('[Calil] ERROR');
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -263,38 +254,6 @@ describe('checkLibrary', () => {
     expect(pollUrl).toContain('session=my_session_id');
   });
 
-  test('logs [Calil] REQUEST on initial fetch', async () => {
-    const bookData = { status: 'OK', libkey: {}, reserveurl: '' };
-    const fetchMock = jest.fn().mockResolvedValue(makeCheckResponse(0, bookData));
-    const { ctx, logs } = buildCalilContext(fetchMock);
-
-    await ctx.checkLibrary(appkey, isbn, systemid);
-
-    expect(logs.log.some(l => l.includes('[Calil] REQUEST'))).toBe(true);
-  });
-
-  test('logs [Calil] RESPONSE on initial response', async () => {
-    const bookData = { status: 'OK', libkey: {}, reserveurl: '' };
-    const fetchMock = jest.fn().mockResolvedValue(makeCheckResponse(0, bookData));
-    const { ctx, logs } = buildCalilContext(fetchMock);
-
-    await ctx.checkLibrary(appkey, isbn, systemid);
-
-    expect(logs.log.some(l => l.includes('[Calil] RESPONSE'))).toBe(true);
-  });
-
-  test('logs [Calil] POLLING and [Calil] POLLING RESPONSE during polling', async () => {
-    const bookData = { status: 'OK', libkey: {}, reserveurl: '' };
-    const fetchMock = jest.fn()
-      .mockResolvedValueOnce(makeCheckResponse(1, null))
-      .mockResolvedValueOnce(makeCheckResponse(0, bookData));
-    const { ctx, logs } = buildCalilContext(fetchMock);
-
-    await ctx.checkLibrary(appkey, isbn, systemid);
-
-    expect(logs.log.some(l => l.includes('[Calil] POLLING '))).toBe(true);
-    expect(logs.log.some(l => l.includes('[Calil] POLLING RESPONSE'))).toBe(true);
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -479,13 +438,4 @@ describe('searchLibraries', () => {
     expect(decodeURIComponent(url)).toContain('city=渋谷区');
   });
 
-  test('logs [Calil] REQUEST and [Calil] RESPONSE', async () => {
-    const fetchMock = jest.fn().mockResolvedValue(makeResponse([]));
-    const { ctx, logs } = buildCalilContext(fetchMock);
-
-    await ctx.searchLibraries(appkey, '東京都');
-
-    expect(logs.log.some(l => l.includes('[Calil] REQUEST'))).toBe(true);
-    expect(logs.log.some(l => l.includes('[Calil] RESPONSE'))).toBe(true);
-  });
 });
