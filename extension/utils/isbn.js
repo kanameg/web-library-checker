@@ -170,13 +170,14 @@ function extractIsbnFromYodobashi() {
   }
 
   // 3. ページ本文テキストから ISBN パターンを検索
+  //    ヨドバシは「ISBN-13：9784...」「ISBN-10：4...」形式で表示する
   const bodyText = document.body.innerText;
-  const m13 = bodyText.match(/ISBN[：:\s]*(97[89][-\d]{10,17})/);
+  const m13 = bodyText.match(/ISBN(?:-13)?[：:\s]*(97[89][-\d]{10,17})/);
   if (m13) {
     const isbn = toIsbn13(m13[1]);
     if (isbn) return isbn;
   }
-  const m10 = bodyText.match(/ISBN[：:\s]*([0-9]{9}[0-9X])/);
+  const m10 = bodyText.match(/ISBN(?:-10)?[：:\s]*([0-9]{9}[0-9X])/);
   if (m10) {
     const isbn = toIsbn13(m10[1]);
     if (isbn) return isbn;

@@ -158,13 +158,18 @@ describe('extractIsbnFromYodobashi', () => {
     expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
   });
 
-  test('extracts ISBN-13 from body text', () => {
+  test('extracts ISBN-13 from body text (plain ISBN: format)', () => {
     Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN：9784873117386', configurable: true });
     expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
   });
 
+  test('extracts ISBN-13 from body text (ISBN-13: format, Yodobashi style)', () => {
+    Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN-10：4873117380\n\nISBN-13：9784873117386', configurable: true });
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
   test('extracts ISBN-10 from body text and converts to ISBN-13', () => {
-    Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN：4873117380', configurable: true });
+    Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN-10：4873117380', configurable: true });
     expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
   });
 

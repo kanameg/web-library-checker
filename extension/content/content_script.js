@@ -27,8 +27,8 @@
   }
 
   function isYodobashiBookPage() {
-    if (!/^https:\/\/www\.yodobashi\.com\/product\/\d+/.test(location.href)) return false;
-    return document.body.innerText.includes('ISBN');
+    // URLパターンのみで判定（動的レンダリングのためDOM確認を行わない）
+    return /^https:\/\/www\.yodobashi\.com\/product\/\d+/.test(location.href);
   }
 
   // --- ウィジェット構築 ---
@@ -209,7 +209,7 @@
   }
 
   // --- メイン処理 ---
-  async function main() {
+  async function main(retryCount = 0) {
     // サイト判定とISBN抽出
     let site = null;
     let isbn = null;
@@ -225,8 +225,17 @@
       isbn = extractIsbnFromYodobashi();
     }
 
-    // 書籍ページ・ISBN未取得なら終了
-    if (!site || !isbn) return;
+    // 書籍ページでない場合は終了
+    if (!site) return;
+
+    // ヨドバシ.comは動的レンダリングのためISBN未取得時はリトライ（最大3回・1秒間隔）
+    if (!isbn && site === 'yodobashi' && retryCount < 3) {
+      setTimeout(() => main(retryCount + 1), 1000);
+      return;
+    }
+
+    // ISBN未取得なら終了
+    if (!isbn) return;
 
     // ウィジェット挿入
     const widget = createWidget();
