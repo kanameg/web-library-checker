@@ -69,12 +69,12 @@
       document.body.appendChild(widget);
       return;
     } else if (site === 'yodobashi') {
-      // 商品スペックテーブルの直後
-      const specTable = document.querySelector('.productSpec, .specBox, .itemSpec');
-      if (specTable) { specTable.insertAdjacentElement('afterend', widget); return; }
-      // フォールバック: メインコンテンツ末尾
-      const mainEl = document.querySelector('#contentsBox, #main, .itemDetail');
-      if (mainEl) { mainEl.appendChild(widget); return; }
+      // カテゴリランキングの直後
+      const ranking = document.querySelector('.pRanking');
+      if (ranking) { ranking.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: 商品情報エリア末尾
+      const productInfo = document.querySelector('#productInfo');
+      if (productInfo) { productInfo.appendChild(widget); return; }
       document.body.appendChild(widget);
       return;
     } else {
