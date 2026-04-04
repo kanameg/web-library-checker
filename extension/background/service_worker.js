@@ -4,6 +4,7 @@
  */
 
 importScripts('../api/calil.js');
+importScripts('../utils/storage.js');
 
 /**
  * メッセージハンドラ
@@ -60,20 +61,3 @@ async function handleSearchLibraries({ pref, city, appkey }) {
   return await searchLibraries(key, pref, city);
 }
 
-/**
- * 設定取得
- */
-function getSettings() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(['calil_api_key', 'libraries'], (result) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
-      } else {
-        resolve({
-          calil_api_key: result.calil_api_key || '',
-          libraries: result.libraries || [],
-        });
-      }
-    });
-  });
-}

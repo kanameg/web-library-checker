@@ -33,28 +33,6 @@
     setTimeout(() => el.classList.add('hidden'), 3000);
   }
 
-  function sanitizeText(text) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(text)));
-    return div.innerHTML;
-  }
-
-  // --- 設定読み込み ---
-  async function loadSettings() {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(['calil_api_key', 'libraries'], (result) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message));
-        } else {
-          resolve({
-            calil_api_key: result.calil_api_key || '',
-            libraries: result.libraries || [],
-          });
-        }
-      });
-    });
-  }
-
   // --- APIキー保存 ---
   saveApiKeyBtn.addEventListener('click', () => {
     const key = apiKeyInput.value.trim();
@@ -223,7 +201,7 @@
   // --- 初期化 ---
   async function init() {
     try {
-      const settings = await loadSettings();
+      const settings = await getSettings();
       apiKeyInput.value = settings.calil_api_key;
       selectedLibraries = settings.libraries || [];
       renderSelectedLibraries();

@@ -1,6 +1,6 @@
 /**
  * Tests for widget-related functions in content_script.js:
- * getBranchIconClass, setWidgetResults
+ * getStatusClass, setWidgetResults
  */
 
 const { loadContentScript } = require('./helpers/load-content-script');
@@ -24,41 +24,41 @@ function createTestWidget() {
   return div;
 }
 
-describe('getBranchIconClass', () => {
+describe('getStatusClass', () => {
   test('"貸出可" returns "available"', () => {
-    expect(fns.getBranchIconClass('貸出可')).toBe('available');
+    expect(fns.getStatusClass('貸出可')).toBe('available');
   });
 
   test('"貸出中" returns "on-loan"', () => {
-    expect(fns.getBranchIconClass('貸出中')).toBe('on-loan');
+    expect(fns.getStatusClass('貸出中')).toBe('on-loan');
   });
 
   test('"休館中" returns "none"', () => {
-    expect(fns.getBranchIconClass('休館中')).toBe('none');
+    expect(fns.getStatusClass('休館中')).toBe('none');
   });
 
   test('"館内のみ" returns "other"', () => {
-    expect(fns.getBranchIconClass('館内のみ')).toBe('other');
+    expect(fns.getStatusClass('館内のみ')).toBe('other');
   });
 
   test('"予約中" returns "other"', () => {
-    expect(fns.getBranchIconClass('予約中')).toBe('other');
+    expect(fns.getStatusClass('予約中')).toBe('other');
   });
 
   test('"準備中" returns "other"', () => {
-    expect(fns.getBranchIconClass('準備中')).toBe('other');
+    expect(fns.getStatusClass('準備中')).toBe('other');
   });
 
-  test('"蔵書なし" returns "other"', () => {
-    expect(fns.getBranchIconClass('蔵書なし')).toBe('other');
+  test('"蔵書なし" returns "none"', () => {
+    expect(fns.getStatusClass('蔵書なし')).toBe('none');
   });
 
   test('unknown string returns "other"', () => {
-    expect(fns.getBranchIconClass('unknown_status')).toBe('other');
+    expect(fns.getStatusClass('unknown_status')).toBe('other');
   });
 
   test('empty string returns "other"', () => {
-    expect(fns.getBranchIconClass('')).toBe('other');
+    expect(fns.getStatusClass('')).toBe('other');
   });
 });
 

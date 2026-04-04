@@ -12,31 +12,14 @@
     document.getElementById(id).classList.add('hidden');
   }
 
-  function sanitizeText(text) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(text)));
-    return div.innerHTML;
-  }
-
-  function sanitizeUrl(url) {
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '#';
-      return parsed.href;
-    } catch {
-      return '#';
-    }
-  }
-
   function getStatusInfo(libkey) {
     if (!libkey || Object.keys(libkey).length === 0) {
       return { dotClass: 'none', label: '蔵書なし' };
     }
     const statuses = Object.values(libkey);
-    if (statuses.includes('貸出可')) return { dotClass: 'available', label: '貸出可' };
-    if (statuses.includes('貸出中')) return { dotClass: 'on-loan', label: '貸出中' };
-    if (statuses.includes('蔵書なし')) return { dotClass: 'none', label: '蔵書なし' };
-    return { dotClass: 'other', label: statuses[0] || '確認中' };
+    const priority = ['貸出可', '貸出中', '蔵書なし'];
+    const best = priority.find(s => statuses.includes(s)) || statuses[0] || '確認中';
+    return { dotClass: getStatusClass(best), label: best };
   }
 
   function renderResults(isbn, results) {
