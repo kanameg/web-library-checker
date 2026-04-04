@@ -47,6 +47,7 @@ return Object.assign({
   calcIsbn13CheckDigit,
   normalizeIsbn,
   isbn10to13,
+  isbn13to10,
   toIsbn13,
   extractAsinFromUrl,
   extractIsbnFromPage,

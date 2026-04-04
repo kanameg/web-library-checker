@@ -27,7 +27,22 @@
   }
 
   // --- ウィジェット構築 ---
-  function createWidget() {
+  function buildCrossSiteLink(site, isbn) {
+    if (site === 'amazon') {
+      const url = sanitizeUrl(`https://books.rakuten.co.jp/search/?sitem=${isbn}`);
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="calil-crosssite-link">楽天ブックスで見る</a>`;
+    }
+    if (site === 'rakuten') {
+      const isbn10 = isbn13to10(isbn);
+      const url = isbn10
+        ? sanitizeUrl(`https://www.amazon.co.jp/dp/${isbn10}`)
+        : sanitizeUrl(`https://www.amazon.co.jp/s?k=${isbn}`);
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="calil-crosssite-link">Amazonで見る</a>`;
+    }
+    return null;
+  }
+
+  function createWidget(site, isbn) {
     const wrapper = document.createElement('div');
     wrapper.id = 'calil-library-checker';
     wrapper.innerHTML = `
@@ -41,6 +56,11 @@
         <a href="https://calil.jp/" target="_blank" rel="noopener noreferrer">Powered by カーリル</a>
       </div>
     `;
+
+    const crossLink = buildCrossSiteLink(site, isbn);
+    if (crossLink) {
+      wrapper.querySelector('.calil-footer').insertAdjacentHTML('afterbegin', crossLink);
+    }
 
     wrapper.querySelector('#calil-settings-link').addEventListener('click', (e) => {
       e.preventDefault();
@@ -212,7 +232,7 @@
     if (!site || !isbn) return;
 
     // ウィジェット挿入
-    const widget = createWidget();
+    const widget = createWidget(site, isbn);
     insertWidget(widget, site);
     if (!widget.parentElement) return; // 挿入失敗
 

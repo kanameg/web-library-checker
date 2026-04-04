@@ -29,6 +29,24 @@ function isbn10to13(isbn10) {
 }
 
 /**
+ * ISBN-13 → ISBN-10 変換（978系のみ）
+ * @param {string} isbn13
+ * @returns {string|null} 979系またはフォーマット不正はnull
+ */
+function isbn13to10(isbn13) {
+  const clean = normalizeIsbn(isbn13);
+  if (!/^\d{13}$/.test(clean)) return null;
+  if (!clean.startsWith('978')) return null;
+  const digits9 = clean.slice(3, 12);
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(digits9[i]) * (10 - i);
+  }
+  const check = (11 - (sum % 11)) % 11;
+  return digits9 + (check === 10 ? 'X' : String(check));
+}
+
+/**
  * ISBN文字列を正規化（ハイフン・スペース除去）
  * @param {string} isbn
  * @returns {string}
