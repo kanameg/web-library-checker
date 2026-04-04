@@ -4,7 +4,8 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "package": "node scripts/package.js"
   },
   "devDependencies": {
     "jest": "^29.7.0",
