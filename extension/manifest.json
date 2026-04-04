@@ -10,6 +10,7 @@
   "host_permissions": [
     "https://www.amazon.co.jp/*",
     "https://books.rakuten.co.jp/*",
+    "https://www.yodobashi.com/*",
     "https://api.calil.jp/*"
   ],
   "background": {
@@ -19,7 +20,8 @@
     {
       "matches": [
         "https://www.amazon.co.jp/*",
-        "https://books.rakuten.co.jp/*"
+        "https://books.rakuten.co.jp/*",
+        "https://www.yodobashi.com/product/*"
       ],
       "js": ["utils/isbn.js", "utils/sanitize.js", "utils/status.js", "content/content_script.js"],
       "css": ["content/content_script.css"],

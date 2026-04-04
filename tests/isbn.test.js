@@ -132,6 +132,48 @@ describe('toIsbn13', () => {
   });
 });
 
+describe('extractIsbnFromYodobashi', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+    document.head.innerHTML = '';
+  });
+
+  test('extracts ISBN from meta tag (books:isbn)', () => {
+    document.head.innerHTML = '<meta property="books:isbn" content="9784873117386">';
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('extracts ISBN from meta tag (name="isbn")', () => {
+    document.head.innerHTML = '<meta name="isbn" content="9784873117386">';
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('extracts ISBN from spec table th/td', () => {
+    document.body.innerHTML = '<table><tr><th>ISBN</th><td>9784873117386</td></tr></table>';
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('extracts ISBN from spec table dt/dd', () => {
+    document.body.innerHTML = '<dl><dt>ISBN</dt><dd>9784873117386</dd></dl>';
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('extracts ISBN-13 from body text', () => {
+    Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN：9784873117386', configurable: true });
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('extracts ISBN-10 from body text and converts to ISBN-13', () => {
+    Object.defineProperty(document.body, 'innerText', { get: () => 'ISBN：4873117380', configurable: true });
+    expect(fns.extractIsbnFromYodobashi()).toBe('9784873117386');
+  });
+
+  test('returns null when no ISBN present', () => {
+    Object.defineProperty(document.body, 'innerText', { get: () => '通常の商品ページ', configurable: true });
+    expect(fns.extractIsbnFromYodobashi()).toBeNull();
+  });
+});
+
 describe('extractAsinFromUrl', () => {
   test('extracts ASIN from simple dp URL', () => {
     expect(fns.extractAsinFromUrl('https://www.amazon.co.jp/dp/4873117380')).toBe('4873117380');

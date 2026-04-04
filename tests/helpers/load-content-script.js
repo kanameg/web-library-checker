@@ -51,6 +51,7 @@ return Object.assign({
   extractAsinFromUrl,
   extractIsbnFromPage,
   extractIsbnFromRakuten,
+  extractIsbnFromYodobashi,
   sanitizeText,
   sanitizeUrl,
   getStatusClass,

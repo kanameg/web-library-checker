@@ -144,6 +144,48 @@ function extractIsbnFromPage() {
 }
 
 /**
+ * ヨドバシ.comページのDOMからISBNを抽出
+ * @returns {string|null} ISBN-13文字列
+ */
+function extractIsbnFromYodobashi() {
+  // 1. メタタグ
+  for (const selector of ['meta[property="books:isbn"]', 'meta[name="isbn"]']) {
+    const meta = document.querySelector(selector);
+    if (meta) {
+      const isbn = toIsbn13(meta.getAttribute('content'));
+      if (isbn) return isbn;
+    }
+  }
+
+  // 2. th/dt ペアから「ISBN」ラベルを探す（スペック表）
+  const ths = document.querySelectorAll('th, dt');
+  for (const th of ths) {
+    if (th.textContent.includes('ISBN')) {
+      const td = th.nextElementSibling;
+      if (td) {
+        const isbn = toIsbn13(td.textContent.trim());
+        if (isbn) return isbn;
+      }
+    }
+  }
+
+  // 3. ページ本文テキストから ISBN パターンを検索
+  const bodyText = document.body.innerText;
+  const m13 = bodyText.match(/ISBN[：:\s]*(97[89][-\d]{10,17})/);
+  if (m13) {
+    const isbn = toIsbn13(m13[1]);
+    if (isbn) return isbn;
+  }
+  const m10 = bodyText.match(/ISBN[：:\s]*([0-9]{9}[0-9X])/);
+  if (m10) {
+    const isbn = toIsbn13(m10[1]);
+    if (isbn) return isbn;
+  }
+
+  return null;
+}
+
+/**
  * 楽天ブックスページのDOMからISBNを抽出
  * @returns {string|null} ISBN-13文字列
  */

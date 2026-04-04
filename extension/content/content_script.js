@@ -26,6 +26,11 @@
     return /^https:\/\/books\.rakuten\.co\.jp\/rb\/\d+/.test(location.href);
   }
 
+  function isYodobashiBookPage() {
+    if (!/^https:\/\/www\.yodobashi\.com\/product\/\d+/.test(location.href)) return false;
+    return document.body.innerText.includes('ISBN');
+  }
+
   // --- ウィジェット構築 ---
   function createWidget() {
     const wrapper = document.createElement('div');
@@ -61,6 +66,15 @@
       // フォールバック: 中央ペイン末尾
       const main = document.querySelector('#main');
       if (main) { main.appendChild(widget); return; }
+      document.body.appendChild(widget);
+      return;
+    } else if (site === 'yodobashi') {
+      // 商品スペックテーブルの直後
+      const specTable = document.querySelector('.productSpec, .specBox, .itemSpec');
+      if (specTable) { specTable.insertAdjacentElement('afterend', widget); return; }
+      // フォールバック: メインコンテンツ末尾
+      const mainEl = document.querySelector('#contentsBox, #main, .itemDetail');
+      if (mainEl) { mainEl.appendChild(widget); return; }
       document.body.appendChild(widget);
       return;
     } else {
@@ -206,6 +220,9 @@
     } else if (isRakutenBookPage()) {
       site = 'rakuten';
       isbn = extractIsbnFromRakuten();
+    } else if (isYodobashiBookPage()) {
+      site = 'yodobashi';
+      isbn = extractIsbnFromYodobashi();
     }
 
     // 書籍ページ・ISBN未取得なら終了
@@ -282,6 +299,9 @@
       } else if (isRakutenBookPage()) {
         isBookPage = true;
         isbn = extractIsbnFromRakuten();
+      } else if (isYodobashiBookPage()) {
+        isBookPage = true;
+        isbn = extractIsbnFromYodobashi();
       }
       sendResponse({ isBookPage, isbn });
       return false;
