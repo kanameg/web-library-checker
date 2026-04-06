@@ -109,8 +109,7 @@ Amazon.co.jp・楽天ブックスの書籍ページを閲覧している最中�
 | FR-21 | カーリルAPIキーを入力・保存できる | Must |
 | FR-22 | 都道府県・市区町村でカーリルAPIを使って図書館を検索できる | Must |
 | FR-23 | 検索結果から最大5館を選択して登録・保存できる | Must |
-| FR-24 | 5館上限に達した際、未選択のチェックボックスを無効化する | Should |
-| FR-25 | 設定は `chrome.storage.sync` に保存し、Chromeプロファイル間で同期される | Must |
+| FR-24 | 設定は `chrome.storage.sync` に保存し、Chromeプロファイル間で同期される | Must |
 
 ---
 
