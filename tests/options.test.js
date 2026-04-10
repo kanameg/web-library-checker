@@ -72,12 +72,12 @@ describe('renderSearchResults - 図書館名の表示', () => {
     document.body.innerHTML = '';
   });
 
-  test('formal_name が存在する場合に館名として formal_name を表示する', () => {
+  test('formal が存在する場合に館名として formal を表示する', () => {
     fns.renderSearchResults([
       {
         systemid: 'Tokyo_Pref',
         systemname: '東京都立',
-        formal_name: '東京都立図書館',
+        formal: '東京都立図書館',
         pref: '東京都',
         city: '',
       },
@@ -87,12 +87,12 @@ describe('renderSearchResults - 図書館名の表示', () => {
     expect(nameEl.textContent).toBe('東京都立図書館');
   });
 
-  test('formal_name が空文字の場合に systemname をフォールバックとして表示する', () => {
+  test('formal が空文字の場合に systemname をフォールバックとして表示する', () => {
     fns.renderSearchResults([
       {
         systemid: 'Tokyo_Pref',
         systemname: '東京都立',
-        formal_name: '',
+        formal: '',
         pref: '東京都',
         city: '',
       },
@@ -102,12 +102,12 @@ describe('renderSearchResults - 図書館名の表示', () => {
     expect(nameEl.textContent).toBe('東京都立');
   });
 
-  test('formal_name が null の場合に systemname をフォールバックとして表示する', () => {
+  test('formal が null の場合に systemname をフォールバックとして表示する', () => {
     fns.renderSearchResults([
       {
         systemid: 'Osaka_Pref',
         systemname: '大阪府立',
-        formal_name: null,
+        formal: null,
         pref: '大阪府',
         city: '',
       },
@@ -145,7 +145,7 @@ describe('renderSearchResults - 選択済みリストの表示', () => {
       {
         systemid: 'Tokyo_Pref',
         systemname: '東京都立',
-        formal_name: '東京都立図書館',
+        formal: '東京都立図書館',
         pref: '東京都',
         city: '',
       },
@@ -181,7 +181,7 @@ describe('図書館選択時の保存データスキーマ', () => {
       {
         systemid: 'Tokyo_Pref',
         systemname: '東京都立',
-        formal_name: '東京都立図書館',
+        formal: '東京都立図書館',
         pref: '東京都',
         city: '',
       },
@@ -196,12 +196,12 @@ describe('図書館選択時の保存データスキーマ', () => {
     expect(selected[0].systemname).toBe('東京都立');
   });
 
-  test('name フィールドには formal_name が格納される', () => {
+  test('name フィールドには formal が格納される', () => {
     fns.renderSearchResults([
       {
         systemid: 'Tokyo_Pref',
         systemname: '東京都立',
-        formal_name: '東京都立図書館',
+        formal: '東京都立図書館',
         pref: '東京都',
         city: '',
       },
@@ -215,12 +215,12 @@ describe('図書館選択時の保存データスキーマ', () => {
     expect(selected[0].name).toBe('東京都立図書館');
   });
 
-  test('formal_name が空の場合、name は systemname にフォールバックし systemname フィールドも保持される', () => {
+  test('formal が空の場合、name は systemname にフォールバックし systemname フィールドも保持される', () => {
     fns.renderSearchResults([
       {
         systemid: 'Osaka_Pref',
         systemname: '大阪府立',
-        formal_name: '',
+        formal: '',
         pref: '大阪府',
         city: '',
       },
@@ -240,7 +240,7 @@ describe('図書館選択時の保存データスキーマ', () => {
       {
         systemid: 'Kyoto_Pref',
         systemname: undefined,
-        formal_name: '京都府立図書館',
+        formal: '京都府立図書館',
         pref: '京都府',
         city: '',
       },
@@ -259,7 +259,7 @@ describe('図書館選択時の保存データスキーマ', () => {
       {
         systemid: 'Test_Lib',
         systemname: 'テスト図書館',
-        formal_name: 'テスト正式図書館',
+        formal: 'テスト正式図書館',
         pref: '東京都',
         city: '',
       },
