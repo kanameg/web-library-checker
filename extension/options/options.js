@@ -127,6 +127,7 @@
           selectedLibraries.push({
             systemid: lib.systemid,
             name: lib.formal_name || lib.systemname,
+            systemname: lib.systemname || '',
             pref: lib.pref || '',
             city: lib.city || '',
           });

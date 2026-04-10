@@ -35,13 +35,13 @@
       if (error) {
         row.innerHTML = `
           <span class="status-dot error"></span>
-          <span class="lib-name">${sanitizeText(library.name)}</span>
+          <span class="lib-name">${sanitizeText(library.systemname || library.name)}</span>
           <span class="lib-status" style="color:#c62828">確認失敗</span>
         `;
       } else if (!result || result.status === 'Error') {
         row.innerHTML = `
           <span class="status-dot none"></span>
-          <span class="lib-name">${sanitizeText(library.name)}</span>
+          <span class="lib-name">${sanitizeText(library.systemname || library.name)}</span>
           <span class="lib-status" style="color:#888">蔵書なし</span>
         `;
       } else {
@@ -52,7 +52,7 @@
           : '';
         row.innerHTML = `
           <span class="status-dot ${dotClass}"></span>
-          <span class="lib-name">${sanitizeText(library.name)}</span>
+          <span class="lib-name">${sanitizeText(library.systemname || library.name)}</span>
           <span class="lib-status">${sanitizeText(label)}</span>
           ${reserveLink}
         `;

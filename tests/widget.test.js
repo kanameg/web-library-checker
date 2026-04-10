@@ -322,4 +322,70 @@ describe('setWidgetResults', () => {
     const systemBlocks = widget.querySelectorAll('.calil-system-block');
     expect(systemBlocks).toHaveLength(2);
   });
+
+  // --- システム名称表示テスト（要件 4.1, 4.3）---
+
+  test('systemname が存在する場合はシステムヘッダーに systemname を表示する', () => {
+    const widget = createTestWidget();
+    const results = [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ];
+
+    fns.setWidgetResults(widget, results);
+
+    const systemName = widget.querySelector('.calil-system-name');
+    expect(systemName.textContent).toBe('東京都立');
+  });
+
+  test('systemname が存在しない旧データの場合は name にフォールバックする', () => {
+    const widget = createTestWidget();
+    const results = [
+      {
+        library: { name: '東京都立図書館', systemid: 'Tokyo_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ];
+
+    fns.setWidgetResults(widget, results);
+
+    const systemName = widget.querySelector('.calil-system-name');
+    expect(systemName.textContent).toBe('東京都立図書館');
+  });
+
+  test('systemname が空文字の場合は name にフォールバックする', () => {
+    const widget = createTestWidget();
+    const results = [
+      {
+        library: { name: '大阪府立図書館', systemname: '', systemid: 'Osaka_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ];
+
+    fns.setWidgetResults(widget, results);
+
+    const systemName = widget.querySelector('.calil-system-name');
+    expect(systemName.textContent).toBe('大阪府立図書館');
+  });
+
+  test('error の場合も systemname をシステムヘッダーに表示する', () => {
+    const widget = createTestWidget();
+    const results = [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: null,
+        error: 'network error',
+      },
+    ];
+
+    fns.setWidgetResults(widget, results);
+
+    const systemName = widget.querySelector('.calil-system-name');
+    expect(systemName.textContent).toBe('東京都立');
+  });
 });
