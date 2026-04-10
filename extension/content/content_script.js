@@ -138,7 +138,7 @@
     }
 
     const blocks = results.map(({ library, result, error }) => {
-      const systemName = sanitizeText(library.name);
+      const systemName = sanitizeText(library.systemname || library.name);
 
       if (error) {
         return `

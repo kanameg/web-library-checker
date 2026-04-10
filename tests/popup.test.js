@@ -22,6 +22,7 @@ function loadPopupScript() {
     "  document.addEventListener('DOMContentLoaded', init);\n})();",
     `  return {
     getStatusInfo,
+    renderResults,
     sanitizeText,
     sanitizeUrl,
   };
@@ -105,5 +106,107 @@ describe('getStatusInfo', () => {
   test('single branch with 貸出中 returns on-loan', () => {
     const libkey = { 中央: '貸出中' };
     expect(fns.getStatusInfo(libkey)).toEqual({ dotClass: 'on-loan', label: '貸出中' });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renderResults - システム名称表示テスト（要件 4.2, 4.3）
+// ---------------------------------------------------------------------------
+
+describe('renderResults - 図書館名の表示', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="isbn-display"></div>
+      <div id="library-list"></div>
+      <div id="results" class="hidden"></div>
+    `;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  test('systemname が存在する場合は lib-name に systemname を表示する', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ]);
+
+    const libName = document.querySelector('.lib-name');
+    expect(libName.textContent).toBe('東京都立');
+  });
+
+  test('systemname が存在しない旧データの場合は name にフォールバックする', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '東京都立図書館', systemid: 'Tokyo_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ]);
+
+    const libName = document.querySelector('.lib-name');
+    expect(libName.textContent).toBe('東京都立図書館');
+  });
+
+  test('systemname が空文字の場合は name にフォールバックする', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '大阪府立図書館', systemname: '', systemid: 'Osaka_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+    ]);
+
+    const libName = document.querySelector('.lib-name');
+    expect(libName.textContent).toBe('大阪府立図書館');
+  });
+
+  test('error 行でも systemname を表示する', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: null,
+        error: 'network error',
+      },
+    ]);
+
+    const libName = document.querySelector('.lib-name');
+    expect(libName.textContent).toBe('東京都立');
+  });
+
+  test('蔵書なし行でも systemname を表示する', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: { status: 'Error', libkey: null, reserveurl: '' },
+        error: null,
+      },
+    ]);
+
+    const libName = document.querySelector('.lib-name');
+    expect(libName.textContent).toBe('東京都立');
+  });
+
+  test('複数館で各行のシステム名称を表示する', () => {
+    fns.renderResults('9784873117386', [
+      {
+        library: { name: '東京都立図書館', systemname: '東京都立', systemid: 'Tokyo_Pref' },
+        result: { status: 'OK', libkey: { '中央': '貸出可' }, reserveurl: '' },
+        error: null,
+      },
+      {
+        library: { name: '大阪府立中央図書館', systemname: '大阪府立', systemid: 'Osaka_Pref' },
+        result: { status: 'OK', libkey: { '本館': '貸出中' }, reserveurl: '' },
+        error: null,
+      },
+    ]);
+
+    const libNames = document.querySelectorAll('.lib-name');
+    expect(libNames[0].textContent).toBe('東京都立');
+    expect(libNames[1].textContent).toBe('大阪府立');
   });
 });
