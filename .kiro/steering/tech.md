@@ -36,6 +36,22 @@ Chrome 拡張機能（Manifest V3）のレイヤー構造。コンテンツス�
 - リトライは最大 3 回・exponential backoff
 - セッションキャッシュで重複リクエストを防止（`calil_{isbn}_{systemids}` をキー）
 
+### 図書館エントリのデータモデル
+`chrome.storage.sync` の `libraries` 配列に保存されるエントリのスキーマ：
+
+```js
+{
+  systemid: "...",          // カーリル API の識別子（一意キー）
+  name: "...",              // 表示名（API の formal フィールド優先、なければ systemname）
+  systemname: "...",        // カーリル API の systemname（生値）
+  pref: "...",              // 都道府県
+  city: "...",              // 市区町村
+}
+```
+
+- **`name` の導出ルール**: 選択時に `lib.formal || lib.systemname` を評価して保存
+- **表示時のフォールバック**: UI コンポーネントは `library.systemname || library.name` で表示（後方互換性のため `name` を最終フォールバックとして使用）
+
 ### Testing
 - テスト対象: `extension/api/calil.js`、`service_worker.js`、`content_script.js`、`popup.js`
 - カバレッジ: `jest --coverage`（HTML レポート: `coverage/`）
