@@ -32,6 +32,10 @@ function loadContentScript() {
     getCacheKey,
     loadFromCache,
     saveToCache,
+    loadToggleState,
+    saveToggleState,
+    initToggleBehavior,
+    createWidget,
   };
 })();`
   );

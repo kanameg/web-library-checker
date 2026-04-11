@@ -26,6 +26,21 @@
   height: 20px;
 }
 
+.calil-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: auto;
+  color: #555;
+  line-height: 1;
+}
+
+.calil-toggle-btn:hover {
+  color: #0066c0;
+}
+
 .calil-body {
   min-height: 24px;
 }
