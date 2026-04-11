@@ -134,7 +134,6 @@ graph LR
 | `isValidIsbn13` | `(isbn) → boolean` | ISBN-13 チェックデジット検証 |
 | `isValidIsbn10` | `(isbn) → boolean` | ISBN-10 チェックデジット検証 |
 | `isbn10to13` | `(isbn10) → string\|null` | ISBN-10 → ISBN-13 変換 |
-| `isbn13to10` | `(isbn13) → string\|null` | ISBN-13 → ISBN-10 変換（978系のみ）|
 | `toIsbn13` | `(isbn) → string\|null` | 任意形式 → ISBN-13 変換 |
 | `extractAsinFromUrl` | `(url) → string\|null` | Amazon URL から ASIN 抽出 |
 | `extractIsbnFromPage` | `() → string\|null` | Amazon ページから ISBN 抽出 |
@@ -523,18 +522,15 @@ graph TD
     UC4["UC-04\n図書館を検索・登録する"]
     UC5["UC-05\n図書館を削除する"]
     UC6["UC-06\n予約ページへアクセスする"]
-    UC7["UC-07\n他の書店で同じ本を確認する"]
 
     User --> UC1
     User --> UC2
     User --> UC6
-    User --> UC7
     Admin --> UC3
     Admin --> UC4
     Admin --> UC5
 
     UC1 -.->|extends| UC6
-    UC1 -.->|extends| UC7
     UC2 -.->|extends| UC6
     UC1 -.->|include| UC_ISBN["ISBN自動抽出"]
     UC2 -.->|include| UC_ISBN
@@ -550,7 +546,6 @@ graph TD
 | UC-04 | 図書館を検索・登録する | 管理者 | APIキーが設定済み | 都道府県を選択 → 検索 → チェックボックスで選択 → 保存（最大5館） | 5館選択済みで追加 → チェックボックス無効 |
 | UC-05 | 図書館を削除する | 管理者 | 図書館が1件以上登録済み | 設定ページの登録図書館の「削除」ボタンをクリック → 保存 | — |
 | UC-06 | 予約ページへアクセスする | ユーザー | 蔵書確認済み・reserveurl存在 | ウィジェットまたはポップアップの「予約する」リンクをクリック → 図書館予約ページへ遷移 | reserveurl なし → リンク非表示 |
-| UC-07 | 他書店で同じ本を確認する | ユーザー | 書籍ページを表示中 | ウィジェットフッターの「Amazonで見る」または「楽天ブックスで見る」をクリック | — |
 
 ---
 
@@ -570,7 +565,6 @@ stateDiagram-v2
 
     Widget_Results --> ReservePage : 「予約する」クリック
     Widget_Setup --> OptionsPage : 「設定画面を開く」クリック
-    Widget_Results --> OtherBookStore : クロスサイトリンク
 
     state "ポップアップ" as Popup {
         [*] --> Popup_NotBook : 非対応ページ/例外
@@ -612,7 +606,7 @@ stateDiagram-v2
 │ │ ○ この図書館には蔵書がありません         │ │  ○ = グレー
 │ └──────────────────────────────────────────┘ │
 ├─────────────────────────────────────────────┤
-│ [設定を変更] [楽天ブックスで見る] Powered by カーリル│
+│ [設定を変更]              Powered by カーリル      │
 └─────────────────────────────────────────────┘
 
 【ローディング状態】

@@ -445,7 +445,7 @@ describe('ToggleStateManager', () => {
 
 describe('ToggleButton', () => {
   test('createWidget() が .calil-header 内に .calil-toggle-btn ボタンを含む', () => {
-    const widget = fns.createWidget('amazon', '9784873117386');
+    const widget = fns.createWidget();
     document.body.appendChild(widget);
     const btn = widget.querySelector('.calil-header .calil-toggle-btn');
     expect(btn).not.toBeNull();
@@ -453,14 +453,14 @@ describe('ToggleButton', () => {
   });
 
   test('createWidget() のトグルボタンの初期状態は aria-expanded="true"', () => {
-    const widget = fns.createWidget('amazon', '9784873117386');
+    const widget = fns.createWidget();
     document.body.appendChild(widget);
     const btn = widget.querySelector('.calil-toggle-btn');
     expect(btn.getAttribute('aria-expanded')).toBe('true');
   });
 
   test('createWidget() のトグルボタンは type="button" を持つ', () => {
-    const widget = fns.createWidget('amazon', '9784873117386');
+    const widget = fns.createWidget();
     document.body.appendChild(widget);
     const btn = widget.querySelector('.calil-toggle-btn');
     expect(btn.getAttribute('type')).toBe('button');
@@ -469,7 +469,7 @@ describe('ToggleButton', () => {
 
 describe('ToggleBehavior', () => {
   function createAndAppendWidget() {
-    const widget = fns.createWidget('amazon', '9784873117386');
+    const widget = fns.createWidget();
     document.body.appendChild(widget);
     return widget;
   }

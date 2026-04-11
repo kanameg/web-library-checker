@@ -89,23 +89,6 @@ describe('isbn10to13', () => {
   });
 });
 
-describe('isbn13to10', () => {
-  test('converts ISBN-13 (978) to ISBN-10', () => {
-    expect(fns.isbn13to10('9784873117386')).toBe('4873117380');
-  });
-
-  test('converts ISBN-13 with X check digit', () => {
-    expect(fns.isbn13to10('9780804429573')).toBe('080442957X');
-  });
-
-  test('returns null for 979-prefixed ISBN-13', () => {
-    expect(fns.isbn13to10('9791032309285')).toBeNull();
-  });
-
-  test('returns null for invalid input', () => {
-    expect(fns.isbn13to10('12345')).toBeNull();
-  });
-});
 
 describe('toIsbn13', () => {
   test('returns ISBN-13 unchanged', () => {
