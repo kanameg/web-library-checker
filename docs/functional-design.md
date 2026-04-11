@@ -134,6 +134,7 @@ graph LR
 | `isValidIsbn13` | `(isbn) → boolean` | ISBN-13 チェックデジット検証 |
 | `isValidIsbn10` | `(isbn) → boolean` | ISBN-10 チェックデジット検証 |
 | `isbn10to13` | `(isbn10) → string\|null` | ISBN-10 → ISBN-13 変換 |
+| `isbn13to10` | `(isbn13) → string\|null` | ISBN-13 → ISBN-10 変換（978系のみ）|
 | `toIsbn13` | `(isbn) → string\|null` | 任意形式 → ISBN-13 変換 |
 | `extractAsinFromUrl` | `(url) → string\|null` | Amazon URL から ASIN 抽出 |
 | `extractIsbnFromPage` | `() → string\|null` | Amazon ページから ISBN 抽出 |
@@ -186,6 +187,7 @@ sequenceDiagram
     end
     CS->>CS: extractIsbnFromPage() / extractIsbnFromRakuten()
     CS->>CS: createWidget() / insertWidget()
+    CS->>CS: initToggleBehavior()
     CS->>SW: GET_SETTINGS
     SW-->>CS: {calil_api_key, libraries[]}
     alt APIキーまたは図書館が未設定
@@ -363,10 +365,11 @@ interface Settings {
 }
 
 interface LibraryConfig {
-  systemid: string;  // 図書館システムID（例: "Tokyo_Pref"）
-  name:     string;  // 表示名（formal_name または systemname）
-  pref:     string;  // 都道府県（例: "東京都"）
-  city:     string;  // 市区町村（省略時は空文字列""）
+  systemid:   string;  // 図書館システムID（例: "Tokyo_Pref"）
+  name:       string;  // 表示名（formal または systemname）
+  systemname: string;  // APIの systemname フィールド（英語名）
+  pref:       string;  // 都道府県（例: "東京都"）
+  city:       string;  // 市区町村（省略時は空文字列""）
 }
 ```
 
@@ -375,8 +378,8 @@ interface LibraryConfig {
 {
   "calil_api_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "libraries": [
-    { "systemid": "Tokyo_Pref", "name": "東京都立図書館", "pref": "東京都", "city": "" },
-    { "systemid": "Chiyoda_Tokyo", "name": "千代田区立図書館", "pref": "東京都", "city": "千代田区" }
+    { "systemid": "Tokyo_Pref", "name": "東京都立図書館", "systemname": "Tokyo_Pref", "pref": "東京都", "city": "" },
+    { "systemid": "Chiyoda_Tokyo", "name": "千代田区立図書館", "systemname": "Chiyoda_Tokyo", "pref": "東京都", "city": "千代田区" }
   ]
 }
 ```
@@ -443,15 +446,15 @@ type LoanStatus =
 type CalilLibraryResponse = LibraryInfo[];
 
 interface LibraryInfo {
-  systemid:    string;  // 図書館システムID（ユニークキー）
-  systemname:  string;  // システム英語名
-  formal_name: string;  // 日本語正式名称（優先表示）
-  pref:        string;  // 都道府県
-  city:        string;  // 市区町村
-  address:     string;  // 住所
-  tel:         string;  // 電話番号
-  url:         string;  // 図書館WebサイトURL
-  geocode:     string;  // "経度,緯度"形式
+  systemid:   string;  // 図書館システムID（ユニークキー）
+  systemname: string;  // システム英語名
+  formal:     string;  // 日本語正式名称（優先表示、空文字列の場合は systemname を使用）
+  pref:       string;  // 都道府県
+  city:       string;  // 市区町村
+  address:    string;  // 住所
+  tel:        string;  // 電話番号
+  url:        string;  // 図書館WebサイトURL
+  geocode:    string;  // "経度,緯度"形式
 }
 ```
 
@@ -599,7 +602,7 @@ stateDiagram-v2
 
 ```
 ┌─────────────────────────────────────────────┐
-│ 📚 図書館蔵書チェッカー                      │
+│ 📚 図書館蔵書チェッカー                  [▲] │  ← 折りたたみボタン（展開時は▲、折りたたみ時は▼）
 ├─────────────────────────────────────────────┤
 │ ┌─ 東京都立図書館 ─────────── [予約する] ──┐ │
 │ │ ● 中央図書館      貸出可                │ │  ● = 緑
@@ -614,16 +617,21 @@ stateDiagram-v2
 
 【ローディング状態】
 ┌─────────────────────────────────────────────┐
-│ 📚 図書館蔵書チェッカー                      │
+│ 📚 図書館蔵書チェッカー                  [▲] │
 ├─────────────────────────────────────────────┤
 │  ⟳ 図書館蔵書を確認中...                    │
 └─────────────────────────────────────────────┘
 
 【設定未完了状態】
 ┌─────────────────────────────────────────────┐
-│ 📚 図書館蔵書チェッカー                      │
+│ 📚 図書館蔵書チェッカー                  [▲] │
 ├─────────────────────────────────────────────┤
 │  図書館を設定してください。[設定画面を開く]  │
+└─────────────────────────────────────────────┘
+
+【折りたたみ状態（▼ボタン押下後）】
+┌─────────────────────────────────────────────┐
+│ 📚 図書館蔵書チェッカー                  [▼] │
 └─────────────────────────────────────────────┘
 ```
 

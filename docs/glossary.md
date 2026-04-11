@@ -51,6 +51,8 @@
 | クロスサイトリンク | ウィジェットのフッターに表示される、他方の書店ページへのリンク（Amazonページ→楽天ブックス、楽天ブックスページ→Amazon）（CSSクラス `calil-crosssite-link`） |
 | 予約リンク | 図書館システムブロックのヘッダーまたはポップアップ内に表示される、図書館予約ページへのリンク（CSSクラス `calil-reserve-link`） |
 | システムブロック | ウィジェット内で図書館システム（`systemid`）ごとに生成される表示単位（CSSクラス `calil-system-block`） |
+| 折りたたみボタン | ウィジェットヘッダー右端に表示される、ボディ・フッターの表示/非表示を切り替えるボタン（CSSクラス `calil-toggle-btn`）。展開時は▲・折りたたみ時は▼を表示し、`aria-expanded` 属性で状態を管理する。折りたたみ状態は`localStorage`に永続化される |
+| ヘッダーアイコン | ウィジェットヘッダーの先頭に表示される📚絵文字（CSSクラス `calil-header-icon`） |
 
 ---
 
@@ -71,8 +73,8 @@
 | `status` | 検索ステータス | `"OK"` または `"Error"` |
 | `pref` | 都道府県 | 図書館検索パラメータ |
 | `city` | 市区町村 | 図書館検索パラメータ（任意） |
-| `formal_name` | 正式名称 | 図書館の公式名称。優先して表示名に使用 |
-| `systemname` | システム名称 | `formal_name` が空の場合の代替表示名 |
+| `formal` | 正式名称 | 図書館の公式名称。優先して表示名に使用 |
+| `systemname` | システム名称 | `formal` が空の場合の代替表示名 |
 
 ### ストレージキー名
 
@@ -80,6 +82,7 @@
 |---------------|--------|---------|
 | `calil_api_key` | カーリルAPIキー | `chrome.storage.sync` |
 | `libraries` | 登録図書館リスト | `chrome.storage.sync` |
+| `calil_widget_collapsed` | ウィジェット折りたたみ状態 | `localStorage`（値 `"1"` で折りたたみ済み。キーなし/他の値は展開状態） |
 
 ### メッセージタイプ名
 
@@ -113,6 +116,8 @@
 |---------|------|
 | `calil-library-checker` | ウィジェット全体のルート要素（ID） |
 | `calil-header` | ウィジェットヘッダー領域 |
+| `calil-header-icon` | ヘッダーの📚絵文字アイコン |
+| `calil-toggle-btn` | 折りたたみ/展開ボタン（ヘッダー右端） |
 | `calil-body` | ウィジェットコンテンツ領域 |
 | `calil-footer` | ウィジェットフッター領域 |
 | `calil-system-block` | 図書館システム単位のブロック |
