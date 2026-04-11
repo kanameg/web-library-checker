@@ -49,6 +49,7 @@
       <div class="calil-header">
         <span class="calil-header-icon">📚</span>
         図書館蔵書チェッカー
+        <button type="button" class="calil-toggle-btn" aria-expanded="true" title="折りたたむ">▲</button>
       </div>
       <div class="calil-body"></div>
       <div class="calil-footer">
@@ -138,7 +139,7 @@
     }
 
     const blocks = results.map(({ library, result, error }) => {
-      const systemName = sanitizeText(library.name);
+      const systemName = sanitizeText(library.systemname || library.name);
 
       if (error) {
         return `
@@ -191,6 +192,63 @@
     body.innerHTML = blocks.join('');
   }
 
+  // --- 折りたたみ動作 ---
+  function initToggleBehavior(widget) {
+    const btn = widget.querySelector('.calil-toggle-btn');
+    const body = widget.querySelector('.calil-body');
+    const footer = widget.querySelector('.calil-footer');
+    if (!btn || !body || !footer) return;
+
+    // localStorage から初期状態を復元
+    if (loadToggleState()) {
+      body.style.display = 'none';
+      footer.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = '▼';
+      btn.title = '展開する';
+    }
+
+    btn.addEventListener('click', () => {
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        body.style.display = 'none';
+        footer.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = '▼';
+        btn.title = '展開する';
+        saveToggleState(true);
+      } else {
+        body.style.display = '';
+        footer.style.display = '';
+        btn.setAttribute('aria-expanded', 'true');
+        btn.textContent = '▲';
+        btn.title = '折りたたむ';
+        saveToggleState(false);
+      }
+    });
+  }
+
+  // --- 折りたたみ状態の永続化 ---
+  function loadToggleState() {
+    try {
+      return localStorage.getItem('calil_widget_collapsed') === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  function saveToggleState(collapsed) {
+    try {
+      if (collapsed) {
+        localStorage.setItem('calil_widget_collapsed', '1');
+      } else {
+        localStorage.removeItem('calil_widget_collapsed');
+      }
+    } catch {
+      // localStorage が使えない場合は無視
+    }
+  }
+
   // --- セッションキャッシュ ---
   function getCacheKey(isbn, libraries) {
     const systemids = libraries.map(l => l.systemid).sort().join(',');
@@ -235,6 +293,7 @@
     const widget = createWidget(site, isbn);
     insertWidget(widget, site);
     if (!widget.parentElement) return; // 挿入失敗
+    initToggleBehavior(widget);
 
     // 設定取得
     let settings;

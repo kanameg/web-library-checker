@@ -112,7 +112,7 @@
           ${isSelected ? 'checked' : ''}
           ${isDisabled ? 'disabled' : ''}>
         <div class="library-item-info">
-          <div class="library-item-name">${sanitizeText(lib.formal_name || lib.systemname)}</div>
+          <div class="library-item-name">${sanitizeText(lib.formal || lib.systemname)}</div>
           <div class="library-item-meta">${sanitizeText(lib.pref || '')} ${sanitizeText(lib.city || '')} / ${sanitizeText(lib.systemid)}</div>
         </div>
       `;
@@ -126,7 +126,8 @@
           }
           selectedLibraries.push({
             systemid: lib.systemid,
-            name: lib.formal_name || lib.systemname,
+            name: lib.formal || lib.systemname,
+            systemname: lib.systemname || '',
             pref: lib.pref || '',
             city: lib.city || '',
           });

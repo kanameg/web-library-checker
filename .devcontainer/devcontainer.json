@@ -1,15 +1,28 @@
 {
-  "name": "Python Dev Container",
+  "name": "Chrome Ext Development Container",
   "build": {
     "dockerfile": "Dockerfile"
   },
-"customizations": {
+  "features": {
+    // 開発に必須なNode/npmの最新版を保証
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance"
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next"
       ]
     }
   },
-  "postCreateCommand": "pip install -r requirements.txt"
+  // Claudeの認証情報をホストと共有（毎回ログインしなくて済むようにする）
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude,target=/home/node/.claude,type=bind"
+  ],
+  // コンテナ作成後にツールを自動インストール
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && npx cc-sdd@latest --claude --lang ja",
+  "remoteUser": "node"
 }
